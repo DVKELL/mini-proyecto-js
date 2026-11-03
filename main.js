@@ -24,9 +24,57 @@
   2026-11-06
 */
 
+// PARA MAÑANA
+/*
+  Usar todos los metodos pequeños en un solo metodo unificado que se encargue de 
+  seleccionar al enemigo, aplicarle el ataque y bajarle la vida
+  luego de eso solo se debe crear el bucle para que cada personaje realice sus ataques y le
+  baje la vida a los enemigos usando los metodos, hasta que los pesonajes vayan muriendo.
+
+  2. Evitar que seleccionen a un oponente y ataquen en base a la propiedad isAlive
+
+  bucle para repetir funcion principal mientras que pfVivos sea > 1
+
+*/
+
 //-- FUNCIONES -- -- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- --
 function generarNumAleatorios(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+function batallaCampal(peleadores) {
+  while (pjVivos > 1) {
+    for (const p of peleadores) {
+      if (p.vida > 0) {
+        p.EjecutarPelea();
+      }
+
+      // if (p.vida < 0 && p.ID in pjMuertos) {
+      //   return;
+      // }
+
+      if (p.vida < 0) {
+        if (p.ID in pjMuertos) {
+          console.log(
+            `Si el ID se encuentra en el listado de bajas: ${p.nombre}`,
+          );
+
+          return;
+        } else {
+          console.log(`Muerto que no esta en el listado de bajas ${p.nombre}`);
+
+          pjMuertos.push(p.ID);
+          pjVivos--;
+        }
+      }
+
+      console.log(pjMuertos);
+    }
+    console.log(`------------- ROUND ${round} -------------`);
+    round++;
+  }
+
+  console.log(pjVivos);
 }
 
 //-- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- --
@@ -34,6 +82,9 @@ function generarNumAleatorios(min, max) {
 // VARIABLES
 let damage;
 let pjAleatorio;
+let pjVivos = 4;
+let round = 1;
+let pjMuertos = [];
 
 //-- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- --
 
@@ -49,25 +100,20 @@ class Character {
   seleccionarOponente() {
     do {
       pjAleatorio = generarNumAleatorios(1, 4);
-      /*
-        if (pjAleatorio === this.ID) {
-        console.log("No puedes atacarte a ti mismo, intenta nuevamente");
-      }
-      */
     } while (pjAleatorio === this.ID);
 
     switch (pjAleatorio) {
       case 1:
-        console.log(`${this.nombre} ataca a Kael - El guerrero Berserker`);
+        console.log(`${this.nombre} ataca a Kael`);
         break;
       case 2:
-        console.log(`${this.nombre} ataca a Elyra - La Arcana`);
+        console.log(`${this.nombre} ataca a Elyra`);
         break;
       case 3:
-        console.log(`${this.nombre} ataca a Darius - El Guardian`);
+        console.log(`${this.nombre} ataca a Darius`);
         break;
       case 4:
-        console.log(`${this.nombre} ataca a Sylas - El de las sombras`);
+        console.log(`${this.nombre} ataca a Sylas`);
         break;
 
       default:
@@ -102,21 +148,28 @@ class Character {
     switch (habilidadAleatoria) {
       case 0:
         this.ataque1();
-        console.log(damage);
         break;
 
       case 1:
         this.ataque2();
-        console.log(damage);
         break;
 
       case 2:
         this.ataque3();
-        console.log(damage);
         break;
 
       default:
         break;
+    }
+  }
+
+  EjecutarPelea() {
+    this.seleccionarOponente();
+    this.lanzarHabilidadAleatoria();
+    for (let p of personajes) {
+      if (p.ID === pjAleatorio) {
+        p.recibirDamage(damage);
+      }
     }
   }
 }
@@ -134,14 +187,14 @@ class Berserker extends Character {
   }
 
   ataque2() {
-    damage = generarNumAleatorios(80, 160);
+    damage = generarNumAleatorios(80, 150);
     console.log(
       `${this.nombre} usa Lanzamiento Sismico y causa ${damage} de daño`,
     );
   }
 
   ataque3() {
-    damage = generarNumAleatorios(225, 450);
+    damage = generarNumAleatorios(220, 350);
 
     console.log(`${this.nombre} usa Furia del Titán y causa ${damage} de daño`);
   }
@@ -157,7 +210,7 @@ class Hechicero extends Character {
   }
 
   ataque2() {
-    damage = generarNumAleatorios(200, 320);
+    damage = generarNumAleatorios(250, 400);
 
     console.log(
       `${this.nombre} usa Lanza de Energía y causa ${damage} de daño`,
@@ -165,7 +218,7 @@ class Hechicero extends Character {
   }
 
   ataque3() {
-    damage = generarNumAleatorios(400, 650);
+    damage = generarNumAleatorios(450, 650);
     console.log(
       `${this.nombre} usa Colapso Dimensional y causa ${damage} de daño`,
     );
@@ -177,21 +230,21 @@ class Paladin extends Character {
     super(nombre, vida, defensa, ID);
   }
   ataque1() {
-    damage = generarNumAleatorios(100, 200);
+    damage = generarNumAleatorios(100, 180);
     console.log(
       `${this.nombre} usa Ataque con Escudo y causa ${damage} de daño`,
     );
   }
 
   ataque2() {
-    damage = generarNumAleatorios(100, 180);
+    damage = generarNumAleatorios(60, 120);
     console.log(
       `${this.nombre} usa Lanzamiento Espada de Justicia ${damage} de daño`,
     );
   }
 
   ataque3() {
-    damage = generarNumAleatorios(250, 400);
+    damage = generarNumAleatorios(180, 300);
 
     console.log(
       `${this.nombre} usa Juicio Celestial y causa ${damage} de daño`,
@@ -227,33 +280,29 @@ class Asesino extends Character {
 }
 
 // Instaciar personajes
-const prueba = new Character(
-  "prueba",
-  generarNumAleatorios(1300, 1500),
-  generarNumAleatorios(180, 220),
-  0,
-);
+const prueba = new Character("prueba", -32, generarNumAleatorios(180, 220), 0);
+
 const berserker = new Berserker(
-  "Kael - El guerrero Berserker",
+  "Kael - Berserker",
   generarNumAleatorios(1300, 1500),
   generarNumAleatorios(180, 220),
   1,
 );
 const hechicera = new Hechicero(
-  "Elyra - La Arcana",
-  generarNumAleatorios(600, 800),
+  "Elyra - hechicera",
+  generarNumAleatorios(700, 900),
   generarNumAleatorios(55, 65),
   2,
 );
 const paladin = new Paladin(
-  "Darius - El Guardian",
+  "Darius - paladin",
   generarNumAleatorios(1500, 1800),
   generarNumAleatorios(200, 250),
   3,
 );
 const asesino = new Asesino(
-  "Sylas - El de las sombras",
-  generarNumAleatorios(750, 950),
+  "Sylas - asesino",
+  generarNumAleatorios(900, 1000),
   generarNumAleatorios(60, 90),
   4,
 );
@@ -261,12 +310,7 @@ const asesino = new Asesino(
 // EJECUCION DE PELEA
 let personajes = [berserker, hechicera, paladin, asesino];
 
-berserker.seleccionarOponente();
-berserker.lanzarHabilidadAleatoria();
+batallaCampal(personajes);
+// asesino.EjecutarPelea();
 
-for (const p of personajes) {
-  if (p.ID === pjAleatorio) {
-    console.log(p);
-    p.recibirDamage(damage);
-  }
-}
+// console.log(personajes[0].isAlive);
