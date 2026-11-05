@@ -36,47 +36,40 @@
   bucle para repetir funcion principal mientras que pfVivos sea > 1
 
 */
-console.log("HOLAAAAAAAAAAAAAAAAAAAA");
 
 //-- FUNCIONES -- -- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- --
 function generarNumAleatorios(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
+/*
+  La condición de parada global: Asegúrate de que el juego termine de forma estricta midiendo cuántos objetos en el arreglo personajes 
+  cumplen realmente con vida > 0, en lugar de depender exclusivamente de una variable contadora manual (pjVivos) que puede desincronizarse si se 
+  decrementa en bucles anidados.
+*/
 function batallaCampal(peleadores) {
-  while (pjVivos > 1) {
-    for (const p of peleadores) {
+  let sobrevivientes = peleadores.filter((p) => p.vida > 0);
+
+  while (sobrevivientes.length > 1) {
+    console.log(`------------- ROUND ${round} -------------`);
+    for (const p of sobrevivientes) {
       if (p.vida > 0) {
         p.EjecutarPelea();
       }
 
-      if (p.vida < 0) {
-        if (pjMuertos.includes(p.ID)) {
-          console.log(`${p.nombre} ya esta en pjMuertos`);
-          console.log(`NO INCLUIDOS / PJVIVOS: ${pjVivos}`);
+      //2da validacion por si alguno murio luego del ataque
+      sobrevivientes = peleadores.filter((p) => p.vida > 0);
 
-          continue;
-        }
-
-        if (p.vida < 0) {
-          if (!pjMuertos.includes(p.ID)) {
-            console.log(`${p.nombre} SE AGREGA AL LISTADO DE MUERTOS`);
-
-            pjMuertos.push(p.ID);
-            pjVivos--;
-            console.log(`INCLUIDOS / PJMUERTOS: ${pjVivos}`);
-          }
-        }
+      if (sobrevivientes.length <= 1) {
+        break;
       }
     }
-    console.log(`PJMUERTOS: ${pjVivos}`);
-    console.log(pjMuertos);
-    console.log(`------------- ROUND ${round} -------------`);
+
     round++;
   }
 
-  console.log(`Conteo de personajes vivos ${pjVivos}`);
-  console.log(peleadores);
+  console.log(`------------ BATALLA TERMINADA ----------`);
+  console.log(`${sobrevivientes[0].nombre} Es el ganador`);
 }
 
 //-- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- --
@@ -84,10 +77,8 @@ function batallaCampal(peleadores) {
 // VARIABLES
 let damage;
 let pjAleatorio;
-let pjVivos = 4;
 let round = 1;
-let pjMuertos = [];
-let pjAtacable = 0;
+let pjAtacable = false;
 
 //-- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- --
 
@@ -101,43 +92,33 @@ class Character {
   }
 
   seleccionarOponente(personajes) {
+    let sobrevivientes;
+    pjAtacable = false;
+
     do {
+      sobrevivientes = personajes.filter((p) => p.vida > 0);
+
+      if (sobrevivientes.length <= 1) {
+        break;
+      }
+
       pjAleatorio = generarNumAleatorios(1, 4);
-      for (const pj of personajes) {
-        if (pj.ID === pjAleatorio && pj.vida > 0) {
+
+      for (const s of sobrevivientes) {
+        if (s.ID === pjAleatorio && this.ID !== pjAleatorio) {
           pjAtacable = true;
-          console.log(`El personaje ${pj.nombre} es atacable`);
-        } else if (pj.ID === pjAleatorio && pj.vida <= 0) {
-          console.log(
-            `El personaje ${pj.nombre} / VIDA: ${pj.vida} NO es atacable`,
-          );
-          pjAtacable = false;
         }
       }
-      console.log(`Personaje que ataca ${this.nombre}`);
-    } while (pjAleatorio === this.ID || pjAtacable === false);
+    } while (pjAtacable === false);
 
-    switch (pjAleatorio) {
-      case 1:
-        console.log(`${this.nombre} ataca a Kael`);
-        break;
-      case 2:
-        console.log(`${this.nombre} ataca a Elyra`);
-        break;
-      case 3:
-        console.log(`${this.nombre} ataca a Darius`);
-        break;
-      case 4:
-        console.log(`${this.nombre} ataca a Sylas`);
-        break;
-
-      default:
-        break;
+    for (const p of sobrevivientes) {
+      if (p.ID === pjAleatorio) {
+        console.log(`${this.nombre} ataca a ${p.nombre}`);
+      }
     }
   }
 
   recibirDamage(dmg) {
-    console.log(`${this.nombre} recibe ${dmg} damage`);
     this.vida -= dmg;
     console.log(`${this.nombre} le queda ${this.vida} puntos de vida`);
   }
@@ -298,25 +279,25 @@ class Asesino extends Character {
 const prueba = new Character("prueba", -32, generarNumAleatorios(180, 220), 0);
 
 const berserker = new Berserker(
-  "Kael - Berserker",
-  generarNumAleatorios(1300, 1500),
+  "Kael",
+  generarNumAleatorios(900, 1020),
   generarNumAleatorios(180, 220),
   1,
 );
 const hechicera = new Hechicero(
-  "Elyra - hechicera",
+  "Elyra",
   generarNumAleatorios(700, 900),
   generarNumAleatorios(55, 65),
   2,
 );
 const paladin = new Paladin(
-  "Darius - paladin",
-  generarNumAleatorios(1500, 1800),
+  "Darius",
+  generarNumAleatorios(1000, 1100),
   generarNumAleatorios(200, 250),
   3,
 );
 const asesino = new Asesino(
-  "Sylas - asesino",
+  "Sylas",
   generarNumAleatorios(900, 1000),
   generarNumAleatorios(60, 90),
   4,
@@ -325,13 +306,4 @@ const asesino = new Asesino(
 // EJECUCION DE PELEA
 let personajes = [berserker, hechicera, paladin, asesino];
 
-for (const personaje of personajes) {
-  console.log(personaje.vida);
-}
 batallaCampal(personajes);
-// paladin.EjecutarPelea();
-// console.log(`------------ BATALLA TERMINADA ----------`);
-
-// asesino.EjecutarPelea();
-
-// console.log(personajes[0].isAlive);
