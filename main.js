@@ -24,29 +24,11 @@
   2026-11-06
 */
 
-// PARA MAÑANA
-/*
-  Usar todos los metodos pequeños en un solo metodo unificado que se encargue de 
-  seleccionar al enemigo, aplicarle el ataque y bajarle la vida
-  luego de eso solo se debe crear el bucle para que cada personaje realice sus ataques y le
-  baje la vida a los enemigos usando los metodos, hasta que los pesonajes vayan muriendo.
-
-  2. Evitar que seleccionen a un oponente y ataquen en base a la propiedad isAlive
-
-  bucle para repetir funcion principal mientras que pfVivos sea > 1
-
-*/
-
 //-- FUNCIONES -- -- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- --
 function generarNumAleatorios(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-/*
-  La condición de parada global: Asegúrate de que el juego termine de forma estricta midiendo cuántos objetos en el arreglo personajes 
-  cumplen realmente con vida > 0, en lugar de depender exclusivamente de una variable contadora manual (pjVivos) que puede desincronizarse si se 
-  decrementa en bucles anidados.
-*/
 function batallaCampal(peleadores) {
   let sobrevivientes = peleadores.filter((p) => p.vida > 0);
 
