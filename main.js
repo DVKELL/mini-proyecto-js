@@ -36,6 +36,7 @@
   bucle para repetir funcion principal mientras que pfVivos sea > 1
 
 */
+console.log("HOLAAAAAAAAAAAAAAAAAAAA");
 
 //-- FUNCIONES -- -- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- --
 function generarNumAleatorios(min, max) {
@@ -49,32 +50,33 @@ function batallaCampal(peleadores) {
         p.EjecutarPelea();
       }
 
-      // if (p.vida < 0 && p.ID in pjMuertos) {
-      //   return;
-      // }
-
       if (p.vida < 0) {
-        if (p.ID in pjMuertos) {
-          console.log(
-            `Si el ID se encuentra en el listado de bajas: ${p.nombre}`,
-          );
+        if (pjMuertos.includes(p.ID)) {
+          console.log(`${p.nombre} ya esta en pjMuertos`);
+          console.log(`NO INCLUIDOS / PJVIVOS: ${pjVivos}`);
 
-          return;
-        } else {
-          console.log(`Muerto que no esta en el listado de bajas ${p.nombre}`);
+          continue;
+        }
 
-          pjMuertos.push(p.ID);
-          pjVivos--;
+        if (p.vida < 0) {
+          if (!pjMuertos.includes(p.ID)) {
+            console.log(`${p.nombre} SE AGREGA AL LISTADO DE MUERTOS`);
+
+            pjMuertos.push(p.ID);
+            pjVivos--;
+            console.log(`INCLUIDOS / PJMUERTOS: ${pjVivos}`);
+          }
         }
       }
-
-      console.log(pjMuertos);
     }
+    console.log(`PJMUERTOS: ${pjVivos}`);
+    console.log(pjMuertos);
     console.log(`------------- ROUND ${round} -------------`);
     round++;
   }
 
-  console.log(pjVivos);
+  console.log(`Conteo de personajes vivos ${pjVivos}`);
+  console.log(peleadores);
 }
 
 //-- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- --
@@ -85,6 +87,7 @@ let pjAleatorio;
 let pjVivos = 4;
 let round = 1;
 let pjMuertos = [];
+let pjAtacable = 0;
 
 //-- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- --
 
@@ -97,10 +100,22 @@ class Character {
     this.ID = ID;
   }
 
-  seleccionarOponente() {
+  seleccionarOponente(personajes) {
     do {
       pjAleatorio = generarNumAleatorios(1, 4);
-    } while (pjAleatorio === this.ID);
+      for (const pj of personajes) {
+        if (pj.ID === pjAleatorio && pj.vida > 0) {
+          pjAtacable = true;
+          console.log(`El personaje ${pj.nombre} es atacable`);
+        } else if (pj.ID === pjAleatorio && pj.vida <= 0) {
+          console.log(
+            `El personaje ${pj.nombre} / VIDA: ${pj.vida} NO es atacable`,
+          );
+          pjAtacable = false;
+        }
+      }
+      console.log(`Personaje que ataca ${this.nombre}`);
+    } while (pjAleatorio === this.ID || pjAtacable === false);
 
     switch (pjAleatorio) {
       case 1:
@@ -164,8 +179,8 @@ class Character {
   }
 
   EjecutarPelea() {
-    this.seleccionarOponente();
     this.lanzarHabilidadAleatoria();
+    this.seleccionarOponente(personajes);
     for (let p of personajes) {
       if (p.ID === pjAleatorio) {
         p.recibirDamage(damage);
@@ -310,7 +325,13 @@ const asesino = new Asesino(
 // EJECUCION DE PELEA
 let personajes = [berserker, hechicera, paladin, asesino];
 
+for (const personaje of personajes) {
+  console.log(personaje.vida);
+}
 batallaCampal(personajes);
+// paladin.EjecutarPelea();
+// console.log(`------------ BATALLA TERMINADA ----------`);
+
 // asesino.EjecutarPelea();
 
 // console.log(personajes[0].isAlive);
