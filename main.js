@@ -29,31 +29,6 @@ function generarNumAleatorios(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function batallaCampal(peleadores) {
-  let sobrevivientes = peleadores.filter((p) => p.vida > 0);
-
-  while (sobrevivientes.length > 1) {
-    console.log(`------------- ROUND ${round} -------------`);
-    for (const p of sobrevivientes) {
-      if (p.vida > 0) {
-        p.EjecutarPelea();
-      }
-
-      //2da validacion por si alguno murio luego del ataque
-      sobrevivientes = peleadores.filter((p) => p.vida > 0);
-
-      if (sobrevivientes.length <= 1) {
-        break;
-      }
-    }
-
-    round++;
-  }
-
-  console.log(`------------ BATALLA TERMINADA ----------`);
-  console.log(`${sobrevivientes[0].nombre} Es el ganador`);
-}
-
 //-- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- --
 
 // VARIABLES
@@ -163,7 +138,7 @@ class Berserker extends Character {
 
     switch (habilidadAleatoria) {
       case 0:
-        this.ataque1(110, 220, "Ataque con Espada");
+        this.ataque1(90, 180, "Ataque con Espada");
         break;
 
       case 1:
@@ -171,7 +146,7 @@ class Berserker extends Character {
         break;
 
       case 2:
-        this.ataque3(220, 350, "Cataclismo");
+        this.ataque3(200, 330, "Cataclismo");
         break;
     }
   }
@@ -249,6 +224,32 @@ class Asesino extends Character {
   }
 }
 
+//Funcion de pelea
+function batallaCampal(peleadores) {
+  let sobrevivientes = peleadores.filter((p) => p.vida > 0);
+
+  while (sobrevivientes.length > 1) {
+    console.log(`------------- ROUND ${round} -------------`);
+    for (const p of sobrevivientes) {
+      if (p.vida > 0) {
+        p.EjecutarPelea();
+      }
+
+      //2da validacion por si alguno murio luego del ataque
+      sobrevivientes = peleadores.filter((p) => p.vida > 0);
+
+      if (sobrevivientes.length <= 1) {
+        break;
+      }
+    }
+
+    round++;
+  }
+
+  console.log(`------------ BATALLA TERMINADA ----------`);
+  console.log(`${sobrevivientes[0].nombre} Es el ganador`);
+}
+
 // Instaciar personajes
 // const prueba = new Character("prueba", 300, generarNumAleatorios(180, 220), 50);
 
@@ -278,7 +279,6 @@ const asesino = new Asesino(
 );
 
 // EJECUCION DE PELEA
-
 let personajes = [berserker, hechicera, paladin, asesino];
 for (const p of personajes) {
   console.log(`nombre: ${p.nombre} / vida: ${p.vida} escudo: ${p.defensa}`);
