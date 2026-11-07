@@ -113,7 +113,11 @@ class Character {
 
   recibirDamage(dmg) {
     this.vida = this.vida - dmg + this.defensa;
-    console.log(`${this.nombre} le queda ${this.vida} puntos de vida`);
+    if (this.vida <= 0) {
+      console.log(`${this.nombre} le queda 0 puntos de vida`);
+    } else {
+      console.log(`${this.nombre} le queda ${this.vida} puntos de vida`);
+    }
   }
 
   EjecutarPelea() {
@@ -280,8 +284,5 @@ const asesino = new Asesino(
 
 // EJECUCION DE PELEA
 let personajes = [berserker, hechicera, paladin, asesino];
-for (const p of personajes) {
-  console.log(`nombre: ${p.nombre} / vida: ${p.vida} escudo: ${p.defensa}`);
-}
 
 batallaCampal(personajes);
