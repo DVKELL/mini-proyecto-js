@@ -225,6 +225,7 @@ class Asesino extends Character {
 }
 
 //Funcion de pelea
+
 function batallaCampal(peleadores) {
   let sobrevivientes = peleadores.filter((p) => p.vida > 0);
 
@@ -249,7 +250,6 @@ function batallaCampal(peleadores) {
   console.log(`------------ BATALLA TERMINADA ----------`);
   console.log(`${sobrevivientes[0].nombre} Es el ganador`);
 }
-
 // Instaciar personajes
 // const prueba = new Character("prueba", 300, generarNumAleatorios(180, 220), 50);
 
