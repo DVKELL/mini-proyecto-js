@@ -61,6 +61,8 @@ let damage;
 let pjAleatorio;
 let round = 1;
 let pjAtacable = false;
+let pjAtacado;
+let random;
 
 //-- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- -- -- ----- --
 
@@ -71,6 +73,45 @@ class Character {
     this.vida = vida;
     this.defensa = defensa;
     this.ID = ID;
+  }
+
+  ataque1(min, max, nombre) {
+    damage = generarNumAleatorios(min, max);
+    console.log(
+      `${this.nombre} usa ${nombre} contra ${pjAtacado} y le causa ${damage} de daño`,
+    );
+  }
+
+  ataque2(min, max, nombre) {
+    damage = generarNumAleatorios(min, max);
+    console.log(
+      `${this.nombre} usa ${nombre} contra ${pjAtacado} y le causa ${damage} de daño`,
+    );
+  }
+
+  ataque3(min, max, nombre) {
+    damage = generarNumAleatorios(min, max);
+    console.log(
+      `${this.nombre} usa ${nombre} contra ${pjAtacado} y le causa ${damage} de daño`,
+    );
+  }
+
+  lanzarHabilidadAleatoria() {
+    let habilidadAleatoria = Math.floor(Math.random() * 3);
+
+    switch (habilidadAleatoria) {
+      case 0:
+        this.ataque1(1, 10, "ataque1");
+        break;
+
+      case 1:
+        this.ataque2(1, 10, "ataque1");
+        break;
+
+      case 2:
+        this.ataque3(1, 10, "ataque1");
+        break;
+    }
   }
 
   seleccionarOponente(personajes) {
@@ -89,61 +130,20 @@ class Character {
       for (const s of sobrevivientes) {
         if (s.ID === pjAleatorio && this.ID !== pjAleatorio) {
           pjAtacable = true;
+          pjAtacado = s.nombre;
         }
       }
     } while (pjAtacable === false);
-
-    for (const p of sobrevivientes) {
-      if (p.ID === pjAleatorio) {
-        console.log(`${this.nombre} ataca a ${p.nombre}`);
-      }
-    }
   }
 
   recibirDamage(dmg) {
-    this.vida -= dmg;
+    this.vida = this.vida - dmg + this.defensa;
     console.log(`${this.nombre} le queda ${this.vida} puntos de vida`);
   }
 
-  ataque1() {
-    damage = generarNumAleatorios(1, 10);
-    console.log(`${this.nombre} usa Ataque1 y causa ${damage} de daño`);
-  }
-
-  ataque2() {
-    damage = generarNumAleatorios(1, 10);
-    console.log(`${this.nombre} usa ataque2 y causa ${damage} de daño`);
-  }
-
-  ataque3() {
-    damage = generarNumAleatorios(1, 10);
-    console.log(`${this.nombre} usa ataque3 y causa ${damage} de daño`);
-  }
-
-  lanzarHabilidadAleatoria() {
-    let habilidadAleatoria = Math.floor(Math.random() * 3);
-
-    switch (habilidadAleatoria) {
-      case 0:
-        this.ataque1();
-        break;
-
-      case 1:
-        this.ataque2();
-        break;
-
-      case 2:
-        this.ataque3();
-        break;
-
-      default:
-        break;
-    }
-  }
-
   EjecutarPelea() {
-    this.lanzarHabilidadAleatoria();
     this.seleccionarOponente(personajes);
+    this.lanzarHabilidadAleatoria();
     for (let p of personajes) {
       if (p.ID === pjAleatorio) {
         p.recibirDamage(damage);
@@ -158,23 +158,22 @@ class Berserker extends Character {
     super(nombre, vida, defensa, ID);
   }
 
-  ataque1() {
-    damage = generarNumAleatorios(110, 220);
+  lanzarHabilidadAleatoria() {
+    let habilidadAleatoria = Math.floor(Math.random() * 3);
 
-    console.log(`${this.nombre} usa Ataque Brutal y causa ${damage} de daño`);
-  }
+    switch (habilidadAleatoria) {
+      case 0:
+        this.ataque1(110, 220, "Ataque con Espada");
+        break;
 
-  ataque2() {
-    damage = generarNumAleatorios(80, 150);
-    console.log(
-      `${this.nombre} usa Lanzamiento Sismico y causa ${damage} de daño`,
-    );
-  }
+      case 1:
+        this.ataque2(80, 150, "Lanzamiento de Hacha");
+        break;
 
-  ataque3() {
-    damage = generarNumAleatorios(220, 350);
-
-    console.log(`${this.nombre} usa Furia del Titán y causa ${damage} de daño`);
+      case 2:
+        this.ataque3(220, 350, "Cataclismo");
+        break;
+    }
   }
 }
 
@@ -182,24 +181,23 @@ class Hechicero extends Character {
   constructor(nombre, vida, defensa, ID) {
     super(nombre, vida, defensa, ID);
   }
-  ataque1() {
-    damage = generarNumAleatorios(50, 100);
-    console.log(`${this.nombre} usa Ataque Arcano y causa ${damage} de daño`);
-  }
 
-  ataque2() {
-    damage = generarNumAleatorios(250, 400);
+  lanzarHabilidadAleatoria() {
+    let habilidadAleatoria = Math.floor(Math.random() * 3);
 
-    console.log(
-      `${this.nombre} usa Lanza de Energía y causa ${damage} de daño`,
-    );
-  }
+    switch (habilidadAleatoria) {
+      case 0:
+        this.ataque1(50, 100, "Ataque Arcano");
+        break;
 
-  ataque3() {
-    damage = generarNumAleatorios(450, 650);
-    console.log(
-      `${this.nombre} usa Colapso Dimensional y causa ${damage} de daño`,
-    );
+      case 1:
+        this.ataque2(250, 400, "Lanza de Energía");
+        break;
+
+      case 2:
+        this.ataque3(450, 650, "Colapso Dimensional");
+        break;
+    }
   }
 }
 
@@ -207,26 +205,23 @@ class Paladin extends Character {
   constructor(nombre, vida, defensa, ID) {
     super(nombre, vida, defensa, ID);
   }
-  ataque1() {
-    damage = generarNumAleatorios(100, 180);
-    console.log(
-      `${this.nombre} usa Ataque con Escudo y causa ${damage} de daño`,
-    );
-  }
 
-  ataque2() {
-    damage = generarNumAleatorios(60, 120);
-    console.log(
-      `${this.nombre} usa Lanzamiento Espada de Justicia ${damage} de daño`,
-    );
-  }
+  lanzarHabilidadAleatoria() {
+    let habilidadAleatoria = Math.floor(Math.random() * 3);
 
-  ataque3() {
-    damage = generarNumAleatorios(180, 300);
+    switch (habilidadAleatoria) {
+      case 0:
+        this.ataque1(100, 180, "Ataque con Escudo");
+        break;
 
-    console.log(
-      `${this.nombre} usa Juicio Celestial y causa ${damage} de daño`,
-    );
+      case 1:
+        this.ataque2(60, 120, "Lanzamiento Espada de Justicia");
+        break;
+
+      case 2:
+        this.ataque3(180, 300, "Juicio Celestial");
+        break;
+    }
   }
 }
 
@@ -234,58 +229,59 @@ class Asesino extends Character {
   constructor(nombre, vida, defensa, ID) {
     super(nombre, vida, defensa, ID);
   }
-  ataque1() {
-    damage = generarNumAleatorios(100, 200);
 
-    console.log(`${this.nombre} usa Puñalada y causa ${damage} de daño`);
-  }
+  lanzarHabilidadAleatoria() {
+    let habilidadAleatoria = Math.floor(Math.random() * 3);
 
-  ataque2() {
-    damage = generarNumAleatorios(180, 255);
+    switch (habilidadAleatoria) {
+      case 0:
+        this.ataque1(100, 200, "Puñalada");
+        break;
 
-    console.log(
-      `${this.nombre} usa Dagas Espectrales y causa ${damage} de daño`,
-    );
-  }
+      case 1:
+        this.ataque2(180, 225, "Dagas Espectrales");
+        break;
 
-  ataque3() {
-    damage = generarNumAleatorios(230, 510);
-
-    console.log(
-      `${this.nombre} usa Ejecución de las sombras y causa ${damage} de daño`,
-    );
+      case 2:
+        this.ataque3(230, 510, "Ejecución en las sombras");
+        break;
+    }
   }
 }
 
 // Instaciar personajes
-const prueba = new Character("prueba", -32, generarNumAleatorios(180, 220), 0);
+// const prueba = new Character("prueba", 300, generarNumAleatorios(180, 220), 50);
 
 const berserker = new Berserker(
   "Kael",
   generarNumAleatorios(900, 1020),
-  generarNumAleatorios(180, 220),
+  generarNumAleatorios(20, 60),
   1,
 );
 const hechicera = new Hechicero(
   "Elyra",
   generarNumAleatorios(700, 900),
-  generarNumAleatorios(55, 65),
+  generarNumAleatorios(10, 30),
   2,
 );
 const paladin = new Paladin(
   "Darius",
   generarNumAleatorios(1000, 1100),
-  generarNumAleatorios(200, 250),
+  generarNumAleatorios(50, 80),
   3,
 );
 const asesino = new Asesino(
   "Sylas",
-  generarNumAleatorios(900, 1000),
-  generarNumAleatorios(60, 90),
+  generarNumAleatorios(800, 1000),
+  generarNumAleatorios(15, 50),
   4,
 );
 
 // EJECUCION DE PELEA
+
 let personajes = [berserker, hechicera, paladin, asesino];
+for (const p of personajes) {
+  console.log(`nombre: ${p.nombre} / vida: ${p.vida} escudo: ${p.defensa}`);
+}
 
 batallaCampal(personajes);
